@@ -1,0 +1,22 @@
+import {ActionBase} from "actions/ActionBase";
+
+/**
+ * Place mark action
+ */
+export public class PlaceMarkAction extends ActionBase {
+	/**
+	 * The index of the square to place the mark
+	 */
+	public index: number;
+
+	public constructor(@Spec spec:~i~this) {}	
+
+}
+
+/**
+ * Create a PlaceMarkAction
+ */
+export public function createPlaceMarkAction(index: number): PlaceMarkAction {
+	return new PlaceMarkAction({ index: index });
+} 
+

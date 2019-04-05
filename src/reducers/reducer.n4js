@@ -1,0 +1,67 @@
+import {JumpToStepAction} from "actions/JumpToStepAction";
+import {PlaceMarkAction} from "actions/PlaceMarkAction";
+import {ReduxAction} from "@n4jsd/redux";
+import {StoreState} from "store/StoreState";
+import {Utils} from "utils/Utils";
+
+const initialState: StoreState = {
+      history: [
+        {
+          squares: new Array<string>(9)
+        }
+      ],
+      stepNumber: 0,
+      xIsNext: true 
+    };
+  
+
+/**
+ * For this demo application, this reducer is interested in all actions.
+ */
+export public function reducer(state: StoreState, action: ReduxAction): StoreState {
+	if (!state) {
+		state = initialState;
+	}
+	const { history, stepNumber, xIsNext } = state;
+	
+
+	switch (action.type) {
+		case PlaceMarkAction.n4type.fqn: // This reducer is interested in this action
+			const placeMarkAction = action as PlaceMarkAction;
+			const index = placeMarkAction.index;
+
+			// Copy history
+			const newHistory = history.slice(0, stepNumber + 1);
+			const current = newHistory[newHistory.length - 1];
+			// Copy squares
+			const squares = current.squares.slice();
+
+			if (Utils.calculateWinner(squares) || squares[index]) {
+				return state;
+			}
+			
+			squares[index] = xIsNext? 'X' : 'O';
+			
+			return {
+				history: newHistory.concat([{
+					squares: squares
+				}]),
+				stepNumber: stepNumber + 1,
+				xIsNext: !xIsNext
+			}
+
+		case JumpToStepAction.n4type.fqn: // This reducer is interested in this action
+			const jumpToStepAction = action as JumpToStepAction;
+			const step = jumpToStepAction.step;
+
+			return {
+				history: history.slice(),
+				stepNumber: step,
+				xIsNext: step % 2 === 0
+			}
+
+		default:
+			// Not relevant action, return the old state
+			return state;
+	}
+}

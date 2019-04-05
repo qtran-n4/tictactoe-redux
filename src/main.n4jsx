@@ -1,0 +1,14 @@
+// ========================================
+import {Provider} from "@n4jsd/react-redux";
+import {ConnectedGame} from "components/Game";
+import {store} from "store/store";
+import * as ReactDOM from 'react-dom';
+
+const mountNode = document.getElementById("tictactoeAppMountPoint")
+
+ReactDOM.render(
+	<Provider store={store}>
+		<ConnectedGame />
+	</Provider>,
+	mountNode
+);

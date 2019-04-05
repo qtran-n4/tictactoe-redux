@@ -1,0 +1,94 @@
+import {createJumpToStepAction} from "actions/JumpToStepAction";
+import {createPlaceMarkAction} from "actions/PlaceMarkAction";
+import {Board} from "components/Board";
+import {connect} from "@n4jsd/react-redux";
+import {ReduxAction} from "@n4jsd/redux";
+import {StoreState} from "store/StoreState";
+import {Utils} from "utils/Utils";
+import * as React from "react";
+
+/**
+ * Game component's props
+ */
+export public interface ~GameProps extends React.ComponentProps {
+	public history: Array<~Object with { squares: Array<string> }>;
+	public stepNumber: int;
+	public xIsNext: boolean;
+	public placeMark?: {function(int):void}
+	public jumpToStep?: {function(int): void}
+}
+
+/**
+ * Game component (root)
+ */
+export default public class Game extends React.Component<GameProps, Object> {
+
+  @Override
+  public render(): React.Element<?> {
+  	const { history, stepNumber, xIsNext, placeMark, jumpToStep } = this.props;
+  	
+    const current = history[stepNumber];
+    const winner = Utils.calculateWinner(current.squares);
+
+    const moves: Array<React.Element<?>> = history.map((step, move) => {
+      const desc = move ?
+        'Go to move #' + move :
+        'Go to game start';
+      return (
+        <li key={move}>
+          <button onClick={() => jumpToStep(move)}>{desc}</button>
+        </li>
+      );
+    });
+
+    let status;
+    if (winner) {
+      status = "Winner: " + winner;
+    } else {
+      status = "Next player: " + (xIsNext ? "X" : "O");
+    }
+
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board
+            squares={current.squares}
+            onClick={i => placeMark(i)}
+          />
+        </div>
+        <div className="game-info">
+          <div>{status}</div>
+          <ol>{moves}</ol>
+        </div>
+      </div>
+    );
+  }
+}
+
+
+/**
+ * Map Redux state to Game's props
+ */
+ function mapStateToProps(state: StoreState): GameProps {
+ 	return {
+ 		history: state.history,
+ 		stepNumber: state.stepNumber,
+ 		xIsNext: state.xIsNext
+ 	}
+ }
+ 
+ /**
+  * Map Game's events to Redux actions
+  */
+  function mapDispatchToProps(dispatch: {function(ReduxAction): any} ) {
+  	return {
+  		placeMark: (index: number) => {
+  			dispatch(createPlaceMarkAction(index))
+  		},
+  		jumpToStep: (step: number) => {
+  			dispatch(createJumpToStepAction(step))
+  		}
+  	}	
+  }
+ 
+ export public const ConnectedGame = connect(mapStateToProps, mapDispatchToProps)(Game);

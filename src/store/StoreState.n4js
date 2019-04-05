@@ -1,0 +1,19 @@
+/**
+ * Global Redux state
+ */
+export public class ~StoreState {
+	public history: Array<~Object with { squares: Array<string> }>;
+	public stepNumber: int;
+	public xIsNext: boolean;	
+}
+
+export public const initialState: StoreState = {
+      history: [
+        {
+          squares: new Array<string>(9)
+        }
+      ],
+      stepNumber: 0,
+      xIsNext: true 
+    };
+  
